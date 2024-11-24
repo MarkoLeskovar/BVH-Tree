@@ -1,0 +1,7 @@
+numba~=0.60.0
+numpy~=2.0.2
+scipy~=1.14.1
+matplotlib~=3.9.0
+pyvista~=0.44.1
+pymeshfix~=0.17.0
+icosphere~=0.1.3
