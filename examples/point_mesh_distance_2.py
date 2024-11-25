@@ -49,7 +49,7 @@ def main():
 
     print(f'...done! t = {time.time() - t0:.2f}')
 
-    # Draw the triangle and the point
+    # Initialize the plotter
     pl = pv.Plotter()
     pl.add_axes(color='black')
     pl.add_axes_at_origin(labels_off=True)

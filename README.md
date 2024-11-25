@@ -4,14 +4,20 @@
 
 `AABB-Tree` is Python + Numba implementation of static axis-aligned bounding box tree for fast distance queries on 3D surface meshes.
 
+![example_visualization](docs/example_visualization.gif)
+
 ## Features
 
-- Add text.
+- Lightweight and easy to understand aabbtree class writen in pure Python.
+- JIT-compiled functions with multiprocessing support via [Numba](https://numba.readthedocs.io/en/stable/).
+- Interactive visualization via [PyVista](https://docs.pyvista.org/).
+
 
 ## Project structure
 
 - [´aabbtree´](src/aabbtree) - Main module for AABB-Tree.
-- [´scripts´](examples) - Scripts which serve as examples on how to use `AABB-Tree`.
+- [´examples´](examples) - Scripts which serve as examples on how to use `AABB-Tree`.
+
 
 ## Installation from source
 
@@ -49,6 +55,44 @@ source .venv/Scripts/activate
 pip install -e .
 ```
 
-## Quick programming guide
 
-Add text.
+## Closest point example
+
+```pyhton
+import numpy as np
+import pyvista as pv
+from aabbtree import AABBTree
+import aabbtree.mesh.examples as examples
+
+# Load an example mesh
+mesh_size = 50
+mesh = examples.action_figure(size=mesh_size)
+
+# Create points on a sphere
+points = examples.sphere(diameter=2*mesh_size, nu=5).vertices
+
+# Create the tree
+aabb_tree = AABBTree.from_surface_mesh(mesh, depth_lim=16, split_lim=10)
+
+# Query closest points
+distances, _, closest_points = aabb_tree.query_faces(points, workers=16)
+
+# Add mesh and points
+pl = pv.Plotter()
+pl.add_mesh(mesh.to_pyvista_grid(), color='gray', opacity=1.0)
+pl.add_points(points, render_points_as_spheres=True, point_size=10, color='black')
+
+# Create lines
+lines = np.full(shape=(points.shape[0], 3), fill_value=2, dtype='int')
+lines[:, 1] = np.arange(points.shape[0])
+lines[:, 2] = np.arange(points.shape[0], 2 * points.shape[0])
+
+# Add the closest points
+pl.add_points(closest_points, render_points_as_spheres=True, point_size=5, color='red')
+pl.add_mesh(pv.PolyData(np.vstack((points, closest_points)), lines=lines), color='red', line_width=3)
+
+# Show everything
+pl.show()
+```
+
+![example_output](docs/example_output.png)
