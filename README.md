@@ -58,7 +58,7 @@ pip install -e .
 
 ## Closest point example
 
-```pyhton
+```python
 import numpy as np
 import pyvista as pv
 from aabbtree import AABBTree
