@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from aabbtree.mesh.distance import closest_point_on_line
+from bvhtree.mesh.distance import closest_point_on_line
 
 
 # Define main function

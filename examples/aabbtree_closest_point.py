@@ -2,9 +2,9 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-import aabbtree.mesh.examples as examples
-from aabbtree import AABBTree, AABBNodeList
-from aabbtree.mesh.intersection import box_sphere_intersection
+import bvhtree.mesh.examples as examples
+from bvhtree import AABBTree, AABBNodeList
+from bvhtree.mesh.intersection import box_sphere_intersection
 
 
 

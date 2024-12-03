@@ -2,8 +2,8 @@ import time
 import numpy as np
 import pyvista as pv
 
-from aabbtree import AABBTree
-import aabbtree.mesh.examples as examples
+from bvhtree import AABBTree
+import bvhtree.mesh.examples as examples
 
 
 # Define main function

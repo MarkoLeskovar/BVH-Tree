@@ -3,9 +3,9 @@ import numba
 import numpy as np
 import pyvista as pv
 
-from aabbtree import AABBTree
-import aabbtree.mesh.examples as examples
-from aabbtree.mesh.distance import closest_point_on_triangle
+from bvhtree import AABBTree
+import bvhtree.mesh.examples as examples
+from bvhtree.mesh.distance import closest_point_on_triangle
 
 
 @numba.njit(cache=True)

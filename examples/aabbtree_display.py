@@ -1,5 +1,5 @@
-import aabbtree.mesh.examples as examples
-from aabbtree import AABBTree, AABBTreeDisplay
+import bvhtree.mesh.examples as examples
+from bvhtree import AABBTree, AABBTreeDisplay
 
 
 # Define main function

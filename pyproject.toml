@@ -1,11 +1,11 @@
 [project]
-name = "aabbtree"
+name = "bvhtree"
 version = "0.9.0"
 authors = [{name="Marko Leskovar", email="markoleskovar30@gmail.com"}]
-description = "Axis-Aligned Bounding Box Tree for 3D surface meshes written in Python"
+description = "Bounding Volume Hierarchy Tree for 3D surface meshes written in Python"
 readme = "README.md"
 license = {file = "LICENSE"}
-keywords = ["aabb tree", "bvh tree", "mesh processing"]
+keywords = ["bvh tree", "aabb tree", "mesh processing"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
