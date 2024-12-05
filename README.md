@@ -16,7 +16,7 @@
 ## Project structure
 
 - [´bvhtree´](src/bvhtree) - Main module for BVH-Tree.
-- [´examples´](examples) - Scripts which serve as examples on how to use `AABB-Tree`.
+- [´examples´](examples) - Scripts which serve as examples on how to use `BVH-Tree`.
 
 
 ## Installation from source
@@ -27,7 +27,7 @@ a separated [virtual environment](https://docs.python.org/3/library/venv.html) v
 
 1. Clone the repository to a folder.
 ```sh
-git https://github.com/MarkoLeskovar/AABB-Tree
+git https://github.com/MarkoLeskovar/BVH-Tree
 ```
 
 2. Navigate to the folder.
