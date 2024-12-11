@@ -125,3 +125,17 @@ def compute_triangle_normals(faces: np.ndarray, vertices: np.ndarray) -> np.ndar
     return normals
 
 
+@numba.njit(cache=True)
+def compute_triangle_areas(faces: np.ndarray, vertices: np.ndarray) -> np.ndarray:
+    areas = np.empty(shape=faces.shape[0], dtype='float')
+    for i in range(faces.shape[0]):
+        face_id = faces[i, :]
+        face = vertices[face_id, :]
+        # Get face vectors
+        ab = face[1, :] - face[0, :]
+        ac = face[2, :] - face[0, :]
+        # Compute face area
+        face_area = 0.5 * np.linalg.norm(np.cross(ab, ac))
+        areas[i] = face_area
+    # Return results
+    return areas
