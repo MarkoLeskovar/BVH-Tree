@@ -61,6 +61,7 @@ def main():
 
     aabb_tree = AABBTree.from_surface_mesh(mesh,  depth_lim=16, split_lim=10)
 
+
     print(f'...done! t = {time.time() - t0:.2f}')
 
 
@@ -69,7 +70,7 @@ def main():
     t0 = time.time()
 
     # Query closest points
-    closest_points = aabb_tree.query_faces(points, workers=16)[2]
+    closest_points = aabb_tree.query_closest_points(points, workers=16)[0]
 
     print(f'...done! t = {time.time() - t0:.2f}')
 

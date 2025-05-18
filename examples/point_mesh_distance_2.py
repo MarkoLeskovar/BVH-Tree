@@ -16,7 +16,7 @@ def main():
     mesh_size = 50
 
     # Load the mesh
-    mesh = examples.stanford_lucy(size=0.9 * mesh_size)
+    mesh = examples.stanford_bunny_coarse(size=0.9 * mesh_size)
 
     # Define a volume
     lattice = np.asarray([50, 50, 50])
@@ -45,7 +45,7 @@ def main():
     t0 = time.time()
 
     # Query closest points
-    distances, _, closest_points = aabb_tree.query_faces(points, workers=16)
+    closest_points, distances, _,  = aabb_tree.query_closest_points(points, workers=16)
 
     print(f'...done! t = {time.time() - t0:.2f}')
 

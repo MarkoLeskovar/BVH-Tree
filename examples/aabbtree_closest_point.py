@@ -37,7 +37,7 @@ def main():
     def sphere_widget_callback(point):
 
         # Initial distance guess via kd-tree
-        distance = aabb_tree.query_vertices(point)[0]
+        distance = aabb_tree.query_closest_points(np.asarray(point))[1]
 
         # Check intersection leafs
         intersecting_leaf_nodes = AABBNodeList()

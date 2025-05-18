@@ -2,7 +2,8 @@ import numba
 import numpy as np
 from typing import Sequence
 
-__all__ = ['rot_mat_3d_r', 'rot_mat_3d_d', 'translate_points', 'rotate_points']
+__all__ = ['rot_mat_3d_r', 'rot_mat_3d_d', 'translate_points', 'rotate_points', 'compute_triangle_basis_vectors',
+           'compute_triangle_centers', 'compute_triangle_normals', 'compute_triangle_areas']
 
 
 '''

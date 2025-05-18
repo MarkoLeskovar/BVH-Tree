@@ -17,11 +17,10 @@ def main():
 
     # Initialize the closest points
     closest_points = np.empty_like(points)
-    is_outside = np.zeros(shape=closest_points.shape[0], dtype='bool')
 
     # Find the closest point on a triangle
     for i in range(closest_points.shape[0]):
-        closest_points[i], is_outside[i] = closest_point_on_box(points[i], aabb_min, aabb_max)
+        closest_points[i] = closest_point_on_box(points[i], aabb_min, aabb_max)
 
     # Initialize the plotter
     pl = pv.Plotter()
@@ -39,14 +38,8 @@ def main():
 
     # Add the closest point
     for i in range(closest_points.shape[0]):
-        # Chose color
-        if is_outside[i]:
-            color = 'red'
-        else:
-            color = 'green'
-        # Plot points
-        pl.add_points(closest_points[i], render_points_as_spheres=True, point_size=10, color=color)
-        pl.add_lines(np.asarray([points[i], closest_points[i]]),  color=color, width=5)
+        pl.add_points(closest_points[i], render_points_as_spheres=True, point_size=10, color='green')
+        pl.add_lines(np.asarray([points[i], closest_points[i]]),  color='green', width=5)
 
     # Show everything
     pl.show()

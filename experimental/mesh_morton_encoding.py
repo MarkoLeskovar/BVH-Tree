@@ -17,7 +17,7 @@ def _bit_count_leading_zeros(n: np.uint, n_bits: int) -> int:
 
 @numba.njit(cache=True)
 def _bit_length(n: np.uint) -> int:
-    return int(math.ceil(math.log2(n+1)))
+    return int(math.ceil(math.log2(n + 1)))
 
 
 # @numba.njit(cache=True)
@@ -51,7 +51,7 @@ def _split_morton(sorted_morton_nodes, first_id: int, last_id: int):
 
 
 @numba.njit(cache=True)
-def _binary_radix_sort(array, n_bits: int):
+def _lsd_binary_radix_sort(array, n_bits: int):
     sorted_array = array.copy()
 
     # Initialize binary buckets
@@ -83,6 +83,61 @@ def _binary_radix_sort(array, n_bits: int):
 
     # Return results
     return sorted_array
+
+
+# TODO : Remove this function !!
+@numba.njit(cache=True, parallel=True)
+def _parallel_lsd_binary_radix_sort(array, n_bits: int, n_threads: int):
+
+    # Split elements by the number of workers
+    n_elements_per_thread = int(np.ceil(array.size / n_threads))
+    sorted_size = n_threads * n_elements_per_thread
+
+    # Initialize binary buckets
+    bucket_a = np.zeros(shape=(n_threads, n_elements_per_thread), dtype=array.dtype)
+    bucket_b = np.zeros(shape=(n_threads, n_elements_per_thread), dtype=array.dtype)
+
+    # Set sorted array
+    sorted_array = np.zeros(shape=sorted_size, dtype=array.dtype)
+    sorted_array[:array.size] = array.ravel()
+
+    # Loop over all bits
+    for i_bit in range(n_bits):
+        sorted_array = sorted_array.reshape((n_threads, n_elements_per_thread))
+
+        # Initialize counters
+        counters_a = np.zeros(shape=n_threads, dtype='int')
+        counters_b = np.zeros(shape=n_threads, dtype='int')
+
+        # Parallel loop
+        for i_thread in numba.prange(n_threads):
+
+            # Split array into buckets
+            for i in range(n_elements_per_thread):
+                if _check_bit(sorted_array[i_thread, i], i_bit):
+                    bucket_b[i_thread, counters_b[i_thread]] = sorted_array[i_thread, i]
+                    counters_b[i_thread] += 1
+                else:
+                    bucket_a[i_thread, counters_a[i_thread]] = sorted_array[i_thread, i]
+                    counters_a[i_thread] += 1
+
+        # Flatten the array
+        sorted_array = sorted_array.ravel()
+
+        # Merge the buckets
+        counter = 0
+        for i_thread in range(n_threads):
+            for i in range(counters_a[i_thread]):
+                sorted_array[counter] = bucket_a[i_thread, i]
+                counter += 1
+        for i_thread in range(n_threads):
+            for i in range(counters_b[i_thread]):
+                sorted_array[counter] = bucket_b[i_thread, i]
+                counter += 1
+
+    # Return results
+    return sorted_array[sorted_size - array.size:]
+
 
 
 @numba.njit(cache=True)
@@ -125,14 +180,23 @@ def main():
     t1 = time.time()
 
     # Binary radix sort
-    sorted_morton_codes_NEW = _binary_radix_sort(morton_codes, MAX_BIT_WIDTH_32)
+    sorted_morton_codes_NEW = _lsd_binary_radix_sort(morton_codes, MAX_BIT_WIDTH_32)
 
     t2 = time.time()
+
+    # Parallel binary radix sort
+    n_threads = numba.get_num_threads()
+    sorted_morton_codes_NEW_2 = _parallel_lsd_binary_radix_sort(morton_codes, MAX_BIT_WIDTH_32, n_threads)
+
+    t3 = time.time()
 
     # DEBUG information
     print(f'Numpy sort -> t = {t1 - t0} s')
     print(f'Radix sort -> t = {t2 - t1} s')
+    print(f'Paralle radix sort -> t = {t3 - t2} s')
+
     print(f'Are equal = {np.sum(sorted_morton_codes != sorted_morton_codes_NEW) == 0}')
+    print(f'Are equal = {np.sum(sorted_morton_codes != sorted_morton_codes_NEW_2) == 0}')
 
     # Convert to binary representation strings
     binary_repr = np.zeros(shape=morton_codes.shape[0], dtype='<U32')

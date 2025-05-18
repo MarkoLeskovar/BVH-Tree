@@ -38,7 +38,6 @@ class AABBTree:
         self._num_nodes = self._data_list.shape[0]
         self._num_leaf_nodes = np.sum(self._data_list[:, 1] == -1).item()
 
-        # TODO : Make this optional !!
         # Create tree nodes
         self._nodes = _create_nodes(self._data_list, self._box_list)
 
@@ -140,20 +139,13 @@ class AABBTree:
     # | PUBLIC - QUERY CLOSEST PRIMITIVES                                            |
     # O------------------------------------------------------------------------------O
 
-    def query_vertices(self, points: np.ndarray, workers=1) -> tuple[np.ndarray, np.ndarray]:
-        distances, vertex_ids = self._vertex_kdtree.query(points, workers=workers)
-        return distances, vertex_ids
-
-
-    def query_faces(self, points: np.ndarray, workers=1) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def query_closest_points(self, points: np.ndarray, workers=1) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         if len(points.shape) == 1:
             points = points.reshape((-1, 3))
         # Query points
         init_distances = self._vertex_kdtree.query(points, workers=workers)[0]
         numba.set_num_threads(workers)
-        return _query_faces(self.faces, self._vertices, self._data_list, self._box_list, self._face_ids, self._max_depth, self._num_leaf_nodes, points, init_distances)
-
-
+        return _query_closest_points(self.faces, self._vertices, self._data_list, self._box_list, self._face_ids, self._max_depth, self._num_leaf_nodes, points, init_distances)
 
 
 
@@ -218,12 +210,12 @@ def _build_tree(faces, vertices, depth_lim, split_lim):
                 node_face_index, node_face_count, all_face_ids, all_face_centers)
 
             # Left bounding box
-            left_face_ids = all_face_ids[face_index_left: face_index_left + face_count_left]
-            node_left_box_min, node_left_box_max = _create_aabb(left_face_ids, faces, vertices)
+            face_ids_left = all_face_ids[face_index_left: face_index_left + face_count_left]
+            node_left_box_min, node_left_box_max = _create_aabb(face_ids_left, faces, vertices)
 
             # Right bounding box
-            right_face_ids = all_face_ids[face_index_right: face_index_right + face_count_right]
-            node_right_box_min, node_right_box_max = _create_aabb(right_face_ids, faces, vertices)
+            face_ids_right = all_face_ids[face_index_right: face_index_right + face_count_right]
+            node_right_box_min, node_right_box_max = _create_aabb(face_ids_right, faces, vertices)
 
             # Add left node
             j = list_size
@@ -243,7 +235,7 @@ def _build_tree(faces, vertices, depth_lim, split_lim):
             data_list[j, 3] = face_index_right
             data_list[j, 4] = face_count_right
 
-            # Add to stack (process left first)
+            # Add to stack (process left node first)
             node_id_stack[stack_size] = list_size + 1
             node_id_stack[stack_size + 1] = list_size
 
@@ -293,12 +285,12 @@ def _split_middle(face_index, face_count, all_face_ids, all_face_centers):
 
     # Partial sort
     for i in range(face_index, face_index + face_count):
-        is_left = all_face_centers[all_face_ids[i], split_axis] < split_pos
-        if is_left:
-            face_count_left += 1
-            swap = face_index_left + face_count_left - 1
-            all_face_ids[i], all_face_ids[swap] = all_face_ids[swap], all_face_ids[i]
+        if all_face_centers[all_face_ids[i], split_axis] < split_pos:
+            i_swap = face_index_left + face_count_left
+            if i != i_swap:
+                all_face_ids[i], all_face_ids[i_swap] = all_face_ids[i_swap], all_face_ids[i]
             face_index_right += 1
+            face_count_left += 1
         else:
             face_count_right += 1
 
@@ -352,24 +344,24 @@ O------------------------------------------------------------------------------O
 '''
 
 @numba.njit(cache=True, parallel=True)
-def _query_faces(faces, vertices, data_list, box_list, face_ids, max_depth, num_leaf_nodes, points, init_distances):
+def _query_closest_points(faces, vertices, data_list, box_list, all_face_ids, max_depth, num_leaf_nodes, points, init_distances):
 
     # Initialize output
-    min_distances = np.empty(shape=points.shape[0], dtype='float')
-    min_faces = np.empty(shape=points.shape[0], dtype='int')
     min_points = np.empty_like(points)
+    min_distances = np.empty(shape=points.shape[0], dtype='float')
+    min_faces_ids = np.empty(shape=points.shape[0], dtype='int')
 
     # Loop over all points
     for i in numba.prange(points.shape[0]):
-        node_ids = _node_ball_query(data_list, box_list, max_depth, num_leaf_nodes, points[i], init_distances[i])
-        min_distances[i], min_faces[i], min_points[i, :] = _closest_face(faces, vertices, data_list, face_ids, node_ids, points[i])
+        node_ids = _ball_query(data_list, box_list, max_depth, num_leaf_nodes, points[i], init_distances[i])
+        min_points[i, :], min_distances[i], min_faces_ids[i] = _find_closest_face(faces, vertices, data_list, all_face_ids, node_ids, points[i])
 
     # Return results
-    return min_distances, min_faces, min_points
+    return min_points, min_distances, min_faces_ids
 
 
 @numba.njit(cache=True)
-def _node_ball_query(data_list, box_list, max_depth, num_leaf_nodes, ball_center, ball_radius):
+def _ball_query(data_list, box_list, max_depth, num_leaf_nodes, ball_center, ball_radius):
 
     # Initialize the stack
     node_id_stack = np.zeros(shape=max_depth, dtype='int')
@@ -410,11 +402,11 @@ def _node_ball_query(data_list, box_list, max_depth, num_leaf_nodes, ball_center
 
 
 @numba.njit(cache=True)
-def _closest_face(faces, vertices, data_list, face_ids, node_ids, point):
+def _find_closest_face(faces, vertices, data_list, face_ids, node_ids, point):
     # Initialize variables
     closest_point = np.zeros_like(point)
-    closest_face = -1
     closest_distance = np.inf
+    closest_face_id = -1
 
     # Loop over every node
     for i in range(len(node_ids)):
@@ -438,12 +430,12 @@ def _closest_face(faces, vertices, data_list, face_ids, node_ids, point):
 
             # Update the distance
             if temp_distance < closest_distance:
-                closest_distance = temp_distance
                 closest_point = temp_point
-                closest_face = face_id
+                closest_distance = temp_distance
+                closest_face_id = face_id
 
     # Compute the distance
     closest_distance = np.sqrt(closest_distance)
 
     # Return results
-    return closest_distance, closest_face, closest_point
+    return closest_point, closest_distance, closest_face_id

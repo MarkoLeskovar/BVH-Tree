@@ -24,19 +24,19 @@ _UNIT_VEC_X = np.array([1.0, 0.0, 0.0])
 _UNIT_VEC_Y = np.array([0.0, 1.0, 0.0])
 _UNIT_VEC_Z = np.array([0.0, 0.0, 1.0])
 @numba.njit(cache=True)
-def box_triangle_intersection(box_min, box_max, v0, v1, v2):
-    box_extents = 0.5 * (box_max - box_min)
-    box_center = box_max - box_extents
+def box_triangle_intersection(box_min, box_max, a, b, c):
+    box_extent = 0.5 * (box_max - box_min)
+    box_center = box_max - box_extent
 
     # Center the triangle
-    cent_v0 = v0 - box_center
-    cent_v1 = v1 - box_center
-    cent_v2 = v2 - box_center
+    cent_a = a - box_center
+    cent_b = b - box_center
+    cent_c = c - box_center
 
     # Triangle edge vectors
-    ab = cent_v1 - cent_v0
-    bc = cent_v2 - cent_v1
-    ca = cent_v0 - cent_v2
+    ab = cent_b - cent_a
+    bc = cent_c - cent_b
+    ca = cent_a - cent_c
 
     # Normalize the edge vectors
     ab /= np.linalg.norm(ab)
@@ -61,7 +61,7 @@ def box_triangle_intersection(box_min, box_max, v0, v1, v2):
     # Check intersection with 9 axes, 3 AABB face normals and 1 triangle face normal
     axes = [a00, a01, a02, a10, a11, a12, a20, a21, a22, _UNIT_VEC_X, _UNIT_VEC_Y, _UNIT_VEC_Z, np.cross(ab, bc)]
     for i in range(13):
-        if _separating_axis_theorem(cent_v0, cent_v1, cent_v2, box_extents, axes[i]):
+        if _separating_axis_theorem(cent_a, cent_b, cent_c, box_extent, axes[i]):
             return False
 
     # There is an intersection
@@ -69,16 +69,16 @@ def box_triangle_intersection(box_min, box_max, v0, v1, v2):
 
 
 @numba.njit(cache=True)
-def _separating_axis_theorem(v0, v1, v2, aabb_extents, axis):
+def _separating_axis_theorem(a, b, c, box_extent, axis):
     # Project points onto the provided axis
-    p0 = v0.dot(axis)
-    p1 = v1.dot(axis)
-    p2 = v2.dot(axis)
+    p0 = a.dot(axis)
+    p1 = b.dot(axis)
+    p2 = c.dot(axis)
 
     # Length of the box projection ont a single axis
-    r = (aabb_extents[0] * abs(_UNIT_VEC_X.dot(axis)) +
-         aabb_extents[1] * abs(_UNIT_VEC_Y.dot(axis)) +
-         aabb_extents[2] * abs(_UNIT_VEC_Z.dot(axis)))
+    r = (box_extent[0] * abs(_UNIT_VEC_X.dot(axis)) +
+         box_extent[1] * abs(_UNIT_VEC_Y.dot(axis)) +
+         box_extent[2] * abs(_UNIT_VEC_Z.dot(axis)))
 
     # Find min and max of the projected triangle to create a line (p_min -> p_max)
     p_max = max(p0, p1, p2)
