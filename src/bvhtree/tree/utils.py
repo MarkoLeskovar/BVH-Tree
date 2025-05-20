@@ -2,93 +2,23 @@ import numba
 import numpy as np
 import pyvista as pv
 
-__all__ = ['AABBNode', 'AABBNodeList']
+from .class_node import AABBNode
 
 
 '''
 O------------------------------------------------------------------------------O
-| CLASS - AXIS ALIGNED BOUNDING BOX - NODE                                     |
+| PUBLIC - PYVISTA VISUALIZATION                                               |
 O------------------------------------------------------------------------------O
 '''
 
-class AABBNode:
-
-    def __init__(self):
-        self.box_min = None
-        self.box_max = None
-        self.parent_id = -1
-        self.child_id = -1
-        self.depth = 0
-        self.face_index = -1
-        self.face_count = -1
-
-    @property
-    def left_id(self) -> int:
-        return self.child_id
-
-    @property
-    def right_id(self) -> int:
-        return self.child_id + 1
-
-    def is_leaf(self) -> bool:
-        return self.child_id == -1
-
-    def is_root(self) -> bool:
-        return self.parent_id == -1
+def node_list_to_pyvista_lines(node_list: list[AABBNode]):
+    points, lines = _merge_box_lines(node_list)
+    return pv.PolyData(points, lines=lines)
 
 
-'''
-O------------------------------------------------------------------------------O
-| CLASS - AXIS ALIGNED BOUNDING BOX - NODE LIST                                |
-O------------------------------------------------------------------------------O
-'''
-
-class AABBNodeList:
-
-    def __init__(self):
-        self._nodes = []
-
-    # Container emulation
-    def __getitem__(self, index):
-        return self._nodes[index]
-    def __setitem__(self, index, node: AABBNode):
-        self._nodes[index] = node
-    def __delitem__(self, index):
-        del self._nodes[index]
-
-    # Size and iteration
-    def __len__(self):
-        return len(self._nodes)
-    def __iter__(self):
-        return iter(self._nodes)
-    def __reversed__(self):
-        return reversed(self._nodes)
-
-    # String representation
-    def __repr__(self):
-        return repr(self._nodes)
-    def __str__(self):
-        return str(self._nodes)
-
-    # List-like methods
-    def append(self, node: AABBNode):
-        self._nodes.append(node)
-
-    def pop(self, index=-1) -> AABBNode:
-        return self._nodes.pop(index)
-
-    def clear(self):
-        self._nodes.clear()
-
-    # Custom function
-    def to_pyvista_faces(self):
-        points, faces = _merge_box_faces(self._nodes)
-        return pv.PolyData(points, faces=faces)
-
-    def to_pyvista_lines(self):
-        points, lines = _merge_box_lines(self._nodes)
-        return pv.PolyData(points, lines=lines)
-
+def node_list_to_pyvista_faces(node_list: list[AABBNode]):
+    points, faces = _merge_box_faces(node_list)
+    return pv.PolyData(points, faces=faces)
 
 
 '''

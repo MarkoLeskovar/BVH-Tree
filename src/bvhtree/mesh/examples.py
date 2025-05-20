@@ -7,7 +7,7 @@ from icosphere import icosphere
 
 
 from .utils import rot_mat_3d_d
-from .class_mesh import SurfaceMesh
+from .class_mesh import TriangleMesh
 
 __all__ = ['cube', 'sphere', 'nefertiti', 'stanford_bunny_coarse', 'stanford_bunny', 'stanford_lucy', 'stanford_dragon', 'armadillo', 'action_figure', 'burial_urn']
 
@@ -37,7 +37,7 @@ O------------------------------------------------------------------------------O
 '''
 
 
-def cube(size=1.0) -> SurfaceMesh:
+def cube(size=1.0) -> TriangleMesh:
     """
     Cube mesh consisting of 5 tetrahedral elements.
 
@@ -79,12 +79,12 @@ def cube(size=1.0) -> SurfaceMesh:
     # Shift and scale the geometry
     vertices -= 0.5
     vertices *= size
-    sm_mesh = SurfaceMesh(elements, vertices)
+    sm_mesh = TriangleMesh(elements, vertices)
     # Return results
     return sm_mesh
 
 
-def sphere(diameter=1.0, nu=5) -> SurfaceMesh:
+def sphere(diameter=1.0, nu=5) -> TriangleMesh:
     """
     Sphere mesh.
 
@@ -95,7 +95,7 @@ def sphere(diameter=1.0, nu=5) -> SurfaceMesh:
     # Create a volumetric tetrahedral mesh of a sphere
     vertices, faces = icosphere(nu=nu)
     vertices = vertices * 0.5 * float(diameter)
-    sm_mesh = SurfaceMesh(faces, vertices)
+    sm_mesh = TriangleMesh(faces, vertices)
     return sm_mesh
 
 
@@ -106,7 +106,7 @@ O------------------------------------------------------------------------------O
 '''
 
 
-def stanford_bunny_coarse(size=1.0) -> SurfaceMesh:
+def stanford_bunny_coarse(size=1.0) -> TriangleMesh:
     """
     Coarse Stanford bunny mesh.
 
@@ -120,7 +120,7 @@ def stanford_bunny_coarse(size=1.0) -> SurfaceMesh:
 
 
 # TODO : Normals are facing inwards!! Fix this !!
-def stanford_bunny(size=1.0) -> SurfaceMesh:
+def stanford_bunny(size=1.0) -> TriangleMesh:
     """
     Stanford bunny mesh.
 
@@ -133,7 +133,7 @@ def stanford_bunny(size=1.0) -> SurfaceMesh:
     return sm_mesh
 
 
-def stanford_dragon(size=1.0) -> SurfaceMesh:
+def stanford_dragon(size=1.0) -> TriangleMesh:
     """
     Stanford dragon mesh.
 
@@ -146,7 +146,7 @@ def stanford_dragon(size=1.0) -> SurfaceMesh:
     return sm_mesh
 
 
-def stanford_lucy(size=1.0) -> SurfaceMesh:
+def stanford_lucy(size=1.0) -> TriangleMesh:
     """
     Stanford Lucy mesh.
 
@@ -158,7 +158,7 @@ def stanford_lucy(size=1.0) -> SurfaceMesh:
     return sm_mesh
 
 
-def armadillo(size=1.0) -> SurfaceMesh:
+def armadillo(size=1.0) -> TriangleMesh:
     """
     Armadillo mesh.
 
@@ -171,7 +171,7 @@ def armadillo(size=1.0) -> SurfaceMesh:
     return sm_mesh
 
 
-def nefertiti(size=1.0) -> SurfaceMesh:
+def nefertiti(size=1.0) -> TriangleMesh:
     """
     Nefertiti mesh.
 
@@ -184,7 +184,7 @@ def nefertiti(size=1.0) -> SurfaceMesh:
     return sm_mesh
 
 
-def action_figure(size=1.0,) -> SurfaceMesh:
+def action_figure(size=1.0,) -> TriangleMesh:
     """
     Action figure mesh.
 
@@ -197,7 +197,7 @@ def action_figure(size=1.0,) -> SurfaceMesh:
     return tet_mesh
 
 
-def burial_urn(size=1.0) -> SurfaceMesh:
+def burial_urn(size=1.0) -> TriangleMesh:
     """
     Burial urn mesh.
 
@@ -217,12 +217,12 @@ O------------------------------------------------------------------------------O
 '''
 
 
-def _load_and_fix_mesh(pyvista_download_function, filename: str, fix_mesh=False, flip_normals=False) -> SurfaceMesh:
+def _load_and_fix_mesh(pyvista_download_function, filename: str, fix_mesh=False, flip_normals=False) -> TriangleMesh:
     os.makedirs(_CACHED_DIR, exist_ok=True)
     model_name = os.path.join(_CACHED_DIR, filename)
     # Check if the model already exists
     if os.path.exists(model_name):
-        new_mesh = SurfaceMesh.from_file(model_name)
+        new_mesh = TriangleMesh.from_file(model_name)
     else:
         print(f'Saving the model "{filename}" in folder "{_CACHED_DIR}"...')
         # Download example surface from pyvista
@@ -238,13 +238,13 @@ def _load_and_fix_mesh(pyvista_download_function, filename: str, fix_mesh=False,
         # Get faces and points
         mesh_faces = pyvista_mesh.faces.reshape(-1, 4)[:, 1:]
         mesh_vertices = pyvista_mesh.points
-        new_mesh = SurfaceMesh(mesh_faces, mesh_vertices)
+        new_mesh = TriangleMesh(mesh_faces, mesh_vertices)
         new_mesh.save(model_name)
     # Return the model
     return new_mesh
 
 
-def _shift_and_scale_mesh(mesh: SurfaceMesh, target_size: float) -> SurfaceMesh:
+def _shift_and_scale_mesh(mesh: TriangleMesh, target_size: float) -> TriangleMesh:
     # Shift and scale the geometry
     vertices = mesh.vertices
     center_point = np.average(vertices, axis=0)
@@ -253,5 +253,5 @@ def _shift_and_scale_mesh(mesh: SurfaceMesh, target_size: float) -> SurfaceMesh:
     vertices -= center_point
     vertices *= scaling_factor
     # Return the transformed mesh
-    new_mesh = SurfaceMesh(mesh.faces, vertices)
+    new_mesh = TriangleMesh(mesh.faces, vertices)
     return new_mesh

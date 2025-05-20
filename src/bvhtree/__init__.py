@@ -1,3 +1,3 @@
-from .tree.class_aabbtree import AABBTree
-from .tree.class_aabbnode import AABBNode, AABBNodeList
-from .tree.class_aabbdisplay import AABBTreeDisplay
+from .tree.class_tree import AABBTree
+from .tree.class_node import AABBNode
+from .tree.class_display import AABBTreeDisplay

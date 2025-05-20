@@ -2,20 +2,16 @@ import numba
 import numpy as np
 import pyvista as pv
 import scipy.spatial
-import matplotlib.pyplot as plt
 
-
+from .class_node import AABBNode
 from .class_aabb import axis_aligned_bounding_box
-from .class_aabbnode import AABBNode, AABBNodeList
-from ..mesh.class_mesh import SurfaceMesh
+from ..mesh.class_mesh import TriangleMesh
 from ..mesh.utils import compute_triangle_centers
 from ..mesh.distance import closest_point_on_triangle
 from ..mesh.intersection import box_sphere_intersection
 
 # TODO : Look at this website -> https://mshgrid.com/2021/01/17/aabb-tree/
 # TODO : Implement Surface Area Heuristic (SAH) split strategy !
-# TODO : Convert query function to support numba !
-
 
 
 '''
@@ -66,7 +62,7 @@ class AABBTree:
         return cls(faces, vertices, depth_lim, split_lim)
 
     @classmethod
-    def from_surface_mesh(cls, surface_mesh: SurfaceMesh, depth_lim=10, split_lim=64):
+    def from_surface_mesh(cls, surface_mesh: TriangleMesh, depth_lim=10, split_lim=64):
         """
         Create a class instance from PyVista PolyData.
 
@@ -76,8 +72,8 @@ class AABBTree:
         :returns: A new instance of BVH.
         """
         # Check input type
-        if not isinstance(surface_mesh, SurfaceMesh):
-            raise ValueError(f'Wrong type! Mesh is not an instance of {SurfaceMesh}!')
+        if not isinstance(surface_mesh, TriangleMesh):
+            raise ValueError(f'Wrong type! Mesh is not an instance of {TriangleMesh}!')
         # Return a new instance
         return cls(surface_mesh.faces, surface_mesh.vertices, depth_lim, split_lim)
 
@@ -94,7 +90,7 @@ class AABBTree:
         return self._max_depth
 
     @property
-    def nodes(self) -> AABBNodeList:
+    def nodes(self) -> list[AABBNode]:
         return self._nodes
 
     @property
@@ -110,15 +106,15 @@ class AABBTree:
     # | PUBLIC - NODE RETRIVAL                                                       |
     # O------------------------------------------------------------------------------O
 
-    def get_leaf_nodes(self) -> AABBNodeList:
-        nodes_list = AABBNodeList()
+    def get_leaf_nodes(self) -> list[AABBNode]:
+        nodes_list = []
         for node in self._nodes:
             if node.is_leaf():
                 nodes_list.append(node)
         return nodes_list
 
-    def get_nodes(self, depth: int) -> AABBNodeList:
-        nodes_list = AABBNodeList()
+    def get_nodes(self, depth: int) -> list[AABBNode]:
+        nodes_list = []
         for node in self._nodes:
             if node.depth == depth:
                 nodes_list.append(node)
@@ -317,8 +313,8 @@ def _split_surface_area_heuristic(face_index, face_count, all_face_ids, all_face
     return face_index_left, face_count_left, face_index_right, face_count_right
 
 
-def _create_nodes(data_list: np.ndarray, box_list: np.ndarray) -> AABBNodeList:
-    nodes = AABBNodeList()
+def _create_nodes(data_list: np.ndarray, box_list: np.ndarray) -> list[AABBNode]:
+    nodes = []
     for i in range(data_list.shape[0]):
         node = AABBNode()
         # [0:3] -> box_min, [3:6] -> box_max
@@ -425,7 +421,7 @@ def _find_closest_face(faces, vertices, data_list, face_ids, node_ids, point):
             vertices_2 = vertices[face[2], :]
 
             # Get distance to triangle
-            temp_point = closest_point_on_triangle(point, vertices_0, vertices_1, vertices_2)[0]
+            temp_point = closest_point_on_triangle(point, vertices_0, vertices_1, vertices_2)
             temp_distance = np.sum(np.square(temp_point - point))
 
             # Update the distance

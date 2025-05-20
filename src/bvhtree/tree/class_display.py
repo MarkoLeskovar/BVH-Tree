@@ -2,9 +2,9 @@ import numpy as np
 import pyvista as pv
 from matplotlib import colormaps
 
-from .class_aabbtree import AABBTree
-from ..mesh.class_mesh import SurfaceMesh
-
+from .class_tree import AABBTree
+from ..mesh.class_mesh import TriangleMesh
+from ..tree.utils import node_list_to_pyvista_lines
 
 class AABBTreeDisplay:
 
@@ -29,13 +29,13 @@ class AABBTreeDisplay:
 
         # Add the surface mesh
         pl = pv.Plotter()
-        pl.add_mesh(SurfaceMesh(self._aabb_tree.faces, self._aabb_tree.vertices).to_pyvista_grid(), color='lightgray')
+        pl.add_mesh(TriangleMesh(self._aabb_tree.faces, self._aabb_tree.vertices).to_pyvista_grid(), color='lightgray')
 
         # Add all the nodes
         for i in range(self._aabb_tree.max_depth):
             # Get nodes
             nodes = self._aabb_tree.get_nodes(i + 1)
-            pyvista_nodes = nodes.to_pyvista_lines()
+            pyvista_nodes = node_list_to_pyvista_lines(nodes)
             pyvista_nodes['color'] = np.repeat(np.linspace(0, 1, len(nodes)), 12)
             # Draw both versions of the nodes
             self._actors_1.append(pl.add_mesh(pyvista_nodes, color=colors[i], line_width=self._line_width))

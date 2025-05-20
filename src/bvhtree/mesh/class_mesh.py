@@ -12,7 +12,7 @@ O------------------------------------------------------------------------------O
 O------------------------------------------------------------------------------O
 '''
 
-class SurfaceMesh:
+class TriangleMesh:
     """
     Surface mesh consisting of triangular surface elements.
     """
@@ -33,7 +33,7 @@ class SurfaceMesh:
 
         :param elements: An [N,3] array of elements defined by their node indices.
         :param vertices: An [M,3] array of node coordinates of the mesh.
-        :returns: A new instance of ShapeModel.
+        :returns: A new instance of TriangleMesh.
         """
         return cls(elements, vertices)
 
@@ -43,7 +43,7 @@ class SurfaceMesh:
         Create a class instance from PyVista PolyData.
 
         :param pyvista_grid: PyVista PolyData of triangular surface elements.
-        :returns: A new instance of ShapeModel.
+        :returns: A new instance of TriangleMesh.
         """
         # Check input type
         if not isinstance(pyvista_grid, pv.core.pointset.PolyData):
@@ -60,7 +60,7 @@ class SurfaceMesh:
         Create a class instance from a ".sm.vtk" file.
 
         :param file: The path to the ".sm.vtk" file
-        :returns: A new instance of ShapeModel.
+        :returns: A new instance of TriangleMesh.
         """
         file_format = os.path.splitext(os.path.splitext(file)[0])[1] + os.path.splitext(file)[1]
         if file_format != _FILE_FORMAT:
