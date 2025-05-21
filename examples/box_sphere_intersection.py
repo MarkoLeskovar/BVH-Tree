@@ -1,14 +1,14 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.tree.class_aabb import axis_aligned_bounding_box
-from bvhtree.mesh.intersection import box_sphere_intersection
+from bvhtree.tree import AABB
+from bvhtree.mesh import box_sphere_intersection
 
 
 def main():
 
     # Create a random box
-    box_min, box_max = axis_aligned_bounding_box(np.random.random(size=(6, 3)) * 10)
+    aabb = AABB(np.random.random(size=(6, 3)) * 10)
 
     # Define spheres
     num_spheres = 1000
@@ -22,7 +22,7 @@ def main():
     does_intersect = np.zeros(shape=num_spheres, dtype='bool')
     for i in range(num_spheres):
         sphere_center, sphere_radius = spheres[i][0:3], spheres[i][3]
-        does_intersect[i] = box_sphere_intersection(box_min, box_max, sphere_center, sphere_radius)
+        does_intersect[i] = box_sphere_intersection(aabb.min, aabb.max, sphere_center, sphere_radius)
 
     # Initialize the plotter
     pl = pv.Plotter()
@@ -31,7 +31,7 @@ def main():
     pl.set_background('white')
 
     # Add a box
-    pyvista_aabb = pv.Box(np.vstack((box_min, box_max)).T.ravel())
+    pyvista_aabb = pv.Box(np.vstack((aabb.min, aabb.max)).T.ravel())
     pl.add_mesh(pyvista_aabb, color='gray', opacity=0.1)
     pl.add_mesh(pyvista_aabb.extract_all_edges(), color='orange', line_width=5)
     pl.add_point_labels(pyvista_aabb.points, labels=['0', '1', '2', '3', '4', '5', '6', '7'], font_size=20, always_visible=True, shape_color='orange')

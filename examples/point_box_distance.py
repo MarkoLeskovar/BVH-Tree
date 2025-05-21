@@ -1,15 +1,14 @@
-import numba
 import numpy as np
 import pyvista as pv
 
-from bvhtree.mesh.distance import closest_point_on_box
-from bvhtree.tree.class_aabb import axis_aligned_bounding_box
+from bvhtree.tree import AABB
+from bvhtree.mesh import closest_point_on_box
 
 
 def main():
 
     # Create a random box
-    aabb_min, aabb_max = axis_aligned_bounding_box(np.random.random(size=(6, 3)) * 10)
+    aabb = AABB(np.random.random(size=(6, 3)) * 10)
 
     # Define a point
     num_points = 100
@@ -20,7 +19,7 @@ def main():
 
     # Find the closest point on a triangle
     for i in range(closest_points.shape[0]):
-        closest_points[i] = closest_point_on_box(points[i], aabb_min, aabb_max)
+        closest_points[i] = closest_point_on_box(points[i], aabb.min, aabb.max)
 
     # Initialize the plotter
     pl = pv.Plotter()
@@ -29,7 +28,7 @@ def main():
     pl.set_background('white')
 
     # Add bounding box
-    pyvista_aabb = pv.Box(np.vstack((aabb_min, aabb_max)).T.ravel())
+    pyvista_aabb = pv.Box(np.vstack((aabb.min, aabb.max)).T.ravel())
     pl.add_mesh(pyvista_aabb, color='gray', opacity=0.1)
     pl.add_mesh(pyvista_aabb.extract_all_edges(), color='orange', line_width=5)
 

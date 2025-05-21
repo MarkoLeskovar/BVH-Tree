@@ -1,15 +1,15 @@
 # BVH-Tree
 
-> Bonding Volume Hierarchy Tree for 3D surface meshes written in Python.
+> Bonding Volume Hierarchy Tree for 3D surface meshes written in Python and C++.
 
-`BVH-Tree` is Python + Numba implementation of static bounding volume hierarchy tree for fast distance queries on 3D surface meshes.
+`BVH-Tree` is Python & C++ implementation of static bounding volume hierarchy tree for fast distance queries on 3D surface meshes.
 
 ![example_visualization](docs/example_visualization.gif)
 
 ## Features
 
-- Lightweight and easy to understand bvhtree class writen in pure Python.
-- JIT-compiled functions with multiprocessing support via [Numba](https://numba.readthedocs.io/en/stable/).
+- Lightweight, fast, and easy to understand bvhtree class to be used in Python.
+- Backend written in C++ with multiprocessing support via [OpenMP](https://www.openmp.org/).
 - Interactive visualization via [PyVista](https://docs.pyvista.org/).
 
 
@@ -25,32 +25,13 @@ The `BVH-Tree` is tested and works on Windows 11 and Linux Debian 12. It should 
 The project can be simply installed trough `pip`. It is recommended to install the project in
 a separated [virtual environment](https://docs.python.org/3/library/venv.html) via `venv` module.
 
-1. Clone the repository to a folder.
+1. Clone the repository to a folder and navigat eto the folder.
 ```sh
 git https://github.com/MarkoLeskovar/BVH-Tree
+cd BVH-Tree
 ```
 
-2. Navigate to the folder.
-```sh
- cd BVH-Tree
-```
-
-3. Create a virtual environment with a name ".venv".
-```sh
-python3 -m venv .venv
-```
-
-4. **Linux** - activate virtual environment.
-```sh
-source .venv/bin/activate
-```
-
-4. **Windows** - activate virtual environment.
-```sh
-source .venv/Scripts/activate
-```
-
-5. For local development install `BVH-Tree` in editable mode.
+2. Install the `BVH-Tree` in editable mode for local development.
 ```sh
 pip install -e .
 ```
@@ -61,7 +42,7 @@ pip install -e .
 ```python
 import numpy as np
 import pyvista as pv
-from bvhtree import AABBTree
+from bvhtree.tree import AABBTree
 import bvhtree.mesh.examples as examples
 
 # Load an example mesh

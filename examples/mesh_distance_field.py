@@ -2,8 +2,8 @@ import time
 import numpy as np
 import pyvista as pv
 
-from bvhtree import AABBTree
-import bvhtree.mesh.examples as examples
+from bvhtree.tree import AABBTree
+from bvhtree.mesh import examples
 
 
 # Define main function
@@ -16,7 +16,7 @@ def main():
     mesh_size = 50
 
     # Load the mesh
-    mesh = examples.stanford_bunny_coarse(size=0.9 * mesh_size)
+    mesh = examples.nefertiti(size=0.9 * mesh_size)
 
     # Define a volume
     lattice = np.asarray([50, 50, 50])
@@ -30,23 +30,16 @@ def main():
     # Sampling points
     points = pyvista_grid.points
 
-
     # Create the AABBTree
     print('RUNNING: Initialize AABB Tree...')
     t0 = time.time()
-
-    aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
-
+    aabb_tree = AABBTree.from_triangle_mesh(mesh,  depth_lim=16, split_lim=10)
     print(f'...done! t = {time.time() - t0:.2f}')
-
 
     # AABB Tree-based point search
     print('RUNNING: AABB Tree-based closest point search...')
     t0 = time.time()
-
-    # Query closest points
-    closest_points, distances, _,  = aabb_tree.query_closest_points(points, workers=16)
-
+    closest_points, distances = aabb_tree.query_closest_points(points, workers=16)[0:2]
     print(f'...done! t = {time.time() - t0:.2f}')
 
     # Initialize the plotter

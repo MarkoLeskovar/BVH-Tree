@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.mesh.distance import closest_point_on_line
+from bvhtree.mesh import closest_point_on_line
 
 
 # Define main function
@@ -19,7 +19,7 @@ def main():
 
     # Find the closest point on a triangle
     for i in range(closest_points.shape[0]):
-        closest_points[i] = closest_point_on_line(points[i], line_vertices)
+        closest_points[i] = closest_point_on_line(points[i], line_vertices[0], line_vertices[1])
 
     # Initialize the plotter
     pl = pv.Plotter()

@@ -21,7 +21,7 @@ def rot_mat_3d_r(axis_angles: Sequence[float]) -> np.ndarray:
     :returns: The 3D rotation matrix of shape [3,3].
     """
     axis_angles = np.asarray(axis_angles)
-    return _rot_mat_3D_r(axis_angles)
+    return _rot_mat_3d_r(axis_angles)
 
 
 def rot_mat_3d_d(axis_angles: Sequence[float]) -> np.ndarray:
@@ -32,11 +32,11 @@ def rot_mat_3d_d(axis_angles: Sequence[float]) -> np.ndarray:
     :returns: The 3D rotation matrix of shape [3,3].
     """
     axis_angles = np.deg2rad(axis_angles)
-    return _rot_mat_3D_r(axis_angles)
+    return _rot_mat_3d_r(axis_angles)
 
 
 @numba.njit(cache=True)
-def _rot_mat_3D_r(axis_angeles: Sequence[float]):
+def _rot_mat_3d_r(axis_angeles: Sequence[float]):
     cosA = np.cos(axis_angeles[0])
     cosB = np.cos(axis_angeles[1])
     cosC = np.cos(axis_angeles[2])
@@ -47,7 +47,7 @@ def _rot_mat_3D_r(axis_angeles: Sequence[float]):
         [cosB*cosC, sinA*sinB*cosC - cosA*sinC, cosA*sinB*cosC + sinA*sinC],
         [cosB*sinC, sinA*sinB*sinC + cosA*cosC, cosA*sinB*sinC - sinA*cosC],
         [-sinB    , sinA*cosB                 , cosA*cosB                 ]
-    ], dtype='float')
+    ], dtype=np.float64)
     return rotation_matrix
 
 

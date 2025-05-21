@@ -1,6 +1,9 @@
 import os
 import numpy as np
 import pyvista as pv
+from typing import Sequence
+
+from bvhtree.core import Triangle, TriangleMesh_core, QueryResult
 
 # Global variables
 _FILE_FORMAT = '.sm.vtk'
@@ -23,8 +26,8 @@ class TriangleMesh:
         _check_faces(elements)
         _check_vertices(vertices)
         # Assign values
-        self._faces = elements
-        self._vertices = vertices
+        self._core = TriangleMesh_core(vertices, elements)
+
 
     @classmethod
     def from_arrays(cls, elements: np.ndarray, vertices: np.ndarray):
@@ -33,9 +36,10 @@ class TriangleMesh:
 
         :param elements: An [N,3] array of elements defined by their node indices.
         :param vertices: An [M,3] array of node coordinates of the mesh.
-        :returns: A new instance of TriangleMesh.
+        :returns: A new instance of ShapeModel.
         """
         return cls(elements, vertices)
+
 
     @classmethod
     def from_pyvista_grid(cls, pyvista_grid: pv.core.pointset.PolyData):
@@ -43,7 +47,7 @@ class TriangleMesh:
         Create a class instance from PyVista PolyData.
 
         :param pyvista_grid: PyVista PolyData of triangular surface elements.
-        :returns: A new instance of TriangleMesh.
+        :returns: A new instance of ShapeModel.
         """
         # Check input type
         if not isinstance(pyvista_grid, pv.core.pointset.PolyData):
@@ -54,13 +58,14 @@ class TriangleMesh:
         # Return a new instance
         return cls(elements, vertices)
 
+
     @classmethod
     def from_file(cls, file: str):
         """
         Create a class instance from a ".sm.vtk" file.
 
         :param file: The path to the ".sm.vtk" file
-        :returns: A new instance of TriangleMesh.
+        :returns: A new instance of ShapeModel.
         """
         file_format = os.path.splitext(os.path.splitext(file)[0])[1] + os.path.splitext(file)[1]
         if file_format != _FILE_FORMAT:
@@ -70,16 +75,18 @@ class TriangleMesh:
         # Return a new instance
         return cls.from_pyvista_grid(pyvista_grid)
 
+
     def to_pyvista_grid(self) -> pv.PolyData:
         """
         Convert the class to a PyVista PolyData.
 
         :returns: An instance of PyVista PolyData.
         """
-        padding = np.ones(shape=(self._faces.shape[0], 1), dtype='int') * 3
-        faces = np.hstack((padding, self._faces))
-        pyvista_grid = pv.PolyData(self._vertices, faces=faces)
+        padding = np.ones(shape=(self.num_faces, 1), dtype='int') * 3
+        faces = np.hstack((padding, self.faces.astype('int')))
+        pyvista_grid = pv.PolyData(self.vertices, faces=faces)
         return pyvista_grid
+
 
     def save(self, file: str):
         """
@@ -94,6 +101,7 @@ class TriangleMesh:
         pyvista_grid = self.to_pyvista_grid()
         pyvista_grid.save(file)
 
+
     def show(self, **kwargs):
         """
         Visualize the model using PyVista Plotter.
@@ -105,16 +113,17 @@ class TriangleMesh:
         pl.add_mesh(self.to_pyvista_grid(), color='lightblue')
         pl.show()
 
+
     def copy(self):
         """
         Create a copy of the class.
 
-        :returns: A copy of the ShapeModel instance.
+        :returns: A copy of the TriangleMesh instance.
         """
         obj = type(self).__new__(self.__class__)
-        obj._faces = self._faces.copy()
-        obj._vertices = self._vertices.copy()
+        obj._core = TriangleMesh_core(self._core.vertices, self._core.elements)
         return obj
+
 
     @property
     def num_faces(self) -> int:
@@ -123,7 +132,8 @@ class TriangleMesh:
 
         :returns: Number of mesh faces.
         """
-        return self._faces.shape[0]
+        return self._core.num_faces
+
 
     @property
     def num_vertices(self) -> int:
@@ -132,7 +142,8 @@ class TriangleMesh:
 
         :returns: Number of mesh vertices.
         """
-        return self._vertices.shape[0]
+        return self._core.num_vertices
+
 
     @property
     def vertices(self) -> np.ndarray:
@@ -141,7 +152,8 @@ class TriangleMesh:
 
         :returns: An [M,3] array of mesh vertices.
         """
-        return self._vertices
+        return np.asarray(self._core.vertices)
+
 
     @vertices.setter
     def vertices(self, vertices: np.ndarray):
@@ -151,9 +163,10 @@ class TriangleMesh:
         :vertices: An [M,3] array of mesh vertices.
         """
         vertices = np.asarray(vertices)
-        if self._vertices.shape != vertices.shape:
+        if np.asarray(self._core.vertices).shape != vertices.shape:
             raise ValueError('Shape of vertices does not match the existing vertices!')
-        self._vertices = vertices
+        self._core.vertices = vertices
+
 
     @property
     def faces(self) -> np.ndarray:
@@ -162,7 +175,41 @@ class TriangleMesh:
 
         :returns: An [N,3] array of triangular mesh faces.
         """
-        return self._faces
+        return np.asarray(self._core.faces)
+
+
+    # O------------------------------------------------------------------------------O
+    # | PUBLIC - IN-PLACE MESH TRANSFORMATIONS                                       |
+    # O------------------------------------------------------------------------------O
+
+    def translate(self, trans_vec: Sequence[float]) -> None:
+        self._core.translate(np.asarray(trans_vec))
+
+    def scale(self, scale_vec: Sequence[float]) -> None:
+        self._core.scale(np.asarray(scale_vec))
+
+    def rotate(self, angles: Sequence[float]) -> None:
+        self._core.rotate(np.asarray(angles))
+
+    def transform(self, trans_mat: np.ndarray) -> None:
+        self._core.transform(np.asarray(trans_mat))
+
+
+    # O------------------------------------------------------------------------------O
+    # | PUBLIC - QUERY CLOSEST PRIMITIVES                                            |
+    # O------------------------------------------------------------------------------O
+
+    def query_closest_point(self, point: np.ndarray) -> tuple[np.ndarray, float, int]:
+        result = self._core.query_closest_point(point)
+        return result.point, result.distance, result.face_id
+
+
+    def query_closest_points(self, points: np.ndarray, workers=1) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        if len(points.shape) == 1:
+            points = points.reshape((-1, 3))
+        # Query closest points
+        results = self._core.query_closest_points(points, workers)
+        return _get_query_results(results)
 
 
 '''
@@ -177,6 +224,22 @@ def _check_faces(faces):
     if not np.issubdtype(faces.dtype, np.integer):
         raise ValueError('Wrong type! Faces are not integer values!')
 
+
 def _check_vertices(vertices):
     if vertices.shape[1] != 3:
         raise ValueError('Wrong shape! Vertices are not three-dimensional!')
+
+
+def _get_query_results(query_results: list[QueryResult]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    # Initialize output
+    n_points = len(query_results)
+    closest_points = np.empty((n_points, 3), dtype='float')
+    closest_distances = np.empty(n_points, dtype='float')
+    closest_face_ids = np.empty(n_points, dtype='int')
+    # Convert results to numpy arrays
+    for i in range(n_points):
+        closest_points[i] = query_results[i].point
+        closest_distances[i] = query_results[i].distance
+        closest_face_ids[i] = query_results[i].face_id
+    # Return results
+    return closest_points, closest_distances, closest_face_ids

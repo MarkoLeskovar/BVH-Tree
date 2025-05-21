@@ -3,8 +3,15 @@ import pyvista as pv
 from matplotlib import colormaps
 
 from .class_tree import AABBTree
+from .utils import nodes_to_pyvista_lines
 from ..mesh.class_mesh import TriangleMesh
-from ..tree.utils import nodes_to_pyvista_lines
+
+
+'''
+O------------------------------------------------------------------------------O
+| CLASS - AXIS ALIGNED BOUNDING BOX - TREE - DISPLAY                           |
+O------------------------------------------------------------------------------O
+'''
 
 class AABBTreeDisplay:
 
@@ -34,7 +41,7 @@ class AABBTreeDisplay:
         # Add all the nodes
         for i in range(self._aabb_tree.max_depth):
             # Get nodes
-            nodes = self._aabb_tree.get_nodes(i + 1)
+            nodes = self._aabb_tree.get_nodes_at_depth(i + 1)
             pyvista_nodes = nodes_to_pyvista_lines(nodes)
             pyvista_nodes['color'] = np.repeat(np.linspace(0, 1, len(nodes)), 12)
             # Draw both versions of the nodes

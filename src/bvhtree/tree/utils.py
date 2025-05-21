@@ -2,7 +2,7 @@ import numba
 import numpy as np
 import pyvista as pv
 
-from .class_node import AABBNode
+from bvhtree.core import AABBNode
 
 
 '''
@@ -36,7 +36,7 @@ def _merge_box_faces(nodes: list[AABBNode]) -> tuple[np.ndarray, np.ndarray]:
         # Fill points
         point_id_start = i * 8
         point_id_end = point_id_start + 8
-        points[point_id_start: point_id_end] = _get_box_points(nodes[i].box_min, nodes[i].box_max)
+        points[point_id_start: point_id_end] = _get_box_points(nodes[i].aabb.min, nodes[i].aabb.max)
         # Fill faces
         face_id_start = i * 6
         face_id_end = face_id_start + 6
@@ -54,7 +54,7 @@ def _merge_box_lines(nodes: list[AABBNode]) -> tuple[np.ndarray, np.ndarray]:
         # Fill points
         point_id_start = i * 8
         point_id_end = point_id_start + 8
-        points[point_id_start: point_id_end] = _get_box_points(nodes[i].box_min, nodes[i].box_max)
+        points[point_id_start: point_id_end] = _get_box_points(nodes[i].aabb.min, nodes[i].aabb.max)
         # Fill lines
         line_id_start = i * 12
         line_id_end = line_id_start + 12
