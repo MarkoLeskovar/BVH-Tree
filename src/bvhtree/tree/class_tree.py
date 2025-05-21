@@ -62,7 +62,7 @@ class AABBTree:
         return cls(faces, vertices, depth_lim, split_lim)
 
     @classmethod
-    def from_surface_mesh(cls, surface_mesh: TriangleMesh, depth_lim=10, split_lim=64):
+    def from_triangle_mesh(cls, surface_mesh: TriangleMesh, depth_lim=10, split_lim=64):
         """
         Create a class instance from PyVista PolyData.
 

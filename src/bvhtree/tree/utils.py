@@ -11,12 +11,12 @@ O------------------------------------------------------------------------------O
 O------------------------------------------------------------------------------O
 '''
 
-def node_list_to_pyvista_lines(node_list: list[AABBNode]):
+def nodes_to_pyvista_lines(node_list: list[AABBNode]):
     points, lines = _merge_box_lines(node_list)
     return pv.PolyData(points, lines=lines)
 
 
-def node_list_to_pyvista_faces(node_list: list[AABBNode]):
+def nodes_to_pyvista_faces(node_list: list[AABBNode]):
     points, faces = _merge_box_faces(node_list)
     return pv.PolyData(points, faces=faces)
 

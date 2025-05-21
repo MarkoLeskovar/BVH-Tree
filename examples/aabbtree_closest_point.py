@@ -2,12 +2,10 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-import bvhtree.mesh.examples as examples
 from bvhtree import AABBTree
+from bvhtree.mesh import examples
 from bvhtree.mesh.intersection import box_sphere_intersection
-from bvhtree.tree.utils import node_list_to_pyvista_lines
-
-
+from bvhtree.tree.utils import nodes_to_pyvista_lines
 
 # TODO : Add these two files to examples models!!
 # download_drill()
@@ -22,7 +20,7 @@ def main():
     mesh = examples.nefertiti(size=mesh_size)
 
     # Create a BVH class
-    aabb_tree = AABBTree.from_surface_mesh(mesh, depth_lim=16, split_lim=10)
+    aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
 
     # Initial point
     init_point = np.random.random(size=3)
@@ -38,7 +36,9 @@ def main():
     def sphere_widget_callback(point):
 
         # Initial distance guess via kd-tree
-        distance = aabb_tree.query_closest_points(np.asarray(point))[1]
+        closest_point, distance = aabb_tree.query_closest_points(np.asarray(point))[0:2]
+        closest_point = closest_point[0]
+        distance = distance[0]
 
         # Check intersection leafs
         intersecting_leaf_nodes = []
@@ -49,8 +49,7 @@ def main():
         # Node list
         node_list = []
         # Node stack
-        node_stack = []
-        node_stack.append(aabb_tree.nodes[0])
+        node_stack = [aabb_tree.root_node]
         # While stack has nodes
         while len(node_stack) != 0:
             node = node_stack.pop()
@@ -71,13 +70,17 @@ def main():
             depths[i] = node_list[i].depth
 
         # Convert to pyvista mesh
-        pyvista_mesh_nodes = node_list_to_pyvista_lines(node_list)
+        pyvista_mesh_nodes = nodes_to_pyvista_lines(node_list)
         pyvista_mesh_nodes['color'] = np.repeat(depths, 12)
         pyvista_mesh_nodes['opacity'] = pyvista_mesh_nodes['color'] / depths.max()
 
         # Add the nodes
         pl.add_mesh(pyvista_mesh_nodes, name='nodes_1', scalars='color', opacity='opacity', line_width=2, cmap='jet', show_scalar_bar=False)
-        pl.add_mesh(node_list_to_pyvista_lines(intersecting_leaf_nodes), name='nodes_2', color='black', line_width=5)
+        pl.add_mesh(nodes_to_pyvista_lines(intersecting_leaf_nodes), name='nodes_2', color='black', line_width=5)
+
+        # Add the closest points
+        pl.add_points(closest_point, name='closest_point', render_points_as_spheres=True, point_size=5, color='red')
+        pl.add_mesh(pv.Line(point, closest_point), name='lines', color='red', line_width=3)
 
 
     # Add sphere widget

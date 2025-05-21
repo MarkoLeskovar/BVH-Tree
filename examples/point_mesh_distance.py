@@ -12,16 +12,15 @@ from bvhtree.mesh.distance import closest_point_on_triangle
 def closest_point_on_mesh(point: np.ndarray, mesh_faces: np.ndarray, mesh_vertices: np.ndarray) -> tuple[np.ndarray, int]:
     closest_face = 0
     closest_point = point.copy()
-    temp_min_distance = np.inf
+    closest_distance = np.inf
     for i in range(mesh_faces.shape[0]):
-        temp_element = mesh_faces[i, :]
-        temp_vertices = mesh_vertices[temp_element, :]
+        temp_vertices = mesh_vertices[mesh_faces[i, :], :]
         # Find closest
         temp_point, _ = closest_point_on_triangle(point, temp_vertices[0, :], temp_vertices[1, :], temp_vertices[2, :])
         temp_distance = np.sum(np.square(point - temp_point))
         # Update the distance
-        if temp_distance <= temp_min_distance:
-            temp_min_distance = temp_distance
+        if temp_distance <= closest_distance:
+            closest_distance = temp_distance
             closest_point = temp_point
             closest_face = i
     # Return results
@@ -59,7 +58,7 @@ def main():
     print('RUNNING: Initialize AABB Tree...')
     t0 = time.time()
 
-    aabb_tree = AABBTree.from_surface_mesh(mesh,  depth_lim=16, split_lim=10)
+    aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
 
 
     print(f'...done! t = {time.time() - t0:.2f}')

@@ -35,7 +35,7 @@ def main():
     print('RUNNING: Initialize AABB Tree...')
     t0 = time.time()
 
-    aabb_tree = AABBTree.from_surface_mesh(mesh,  depth_lim=16, split_lim=10)
+    aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
 
     print(f'...done! t = {time.time() - t0:.2f}')
 

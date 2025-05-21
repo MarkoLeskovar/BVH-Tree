@@ -10,7 +10,7 @@ def main():
     mesh = examples.action_figure(size=mesh_size)
 
     # Create a BVH class
-    aabb_tree = AABBTree.from_surface_mesh(mesh, depth_lim=16, split_lim=10)
+    aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
 
     # Show the tree
     AABBTreeDisplay(aabb_tree).show(cmap='hsv')

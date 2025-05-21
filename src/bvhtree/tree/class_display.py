@@ -4,7 +4,7 @@ from matplotlib import colormaps
 
 from .class_tree import AABBTree
 from ..mesh.class_mesh import TriangleMesh
-from ..tree.utils import node_list_to_pyvista_lines
+from ..tree.utils import nodes_to_pyvista_lines
 
 class AABBTreeDisplay:
 
@@ -35,7 +35,7 @@ class AABBTreeDisplay:
         for i in range(self._aabb_tree.max_depth):
             # Get nodes
             nodes = self._aabb_tree.get_nodes(i + 1)
-            pyvista_nodes = node_list_to_pyvista_lines(nodes)
+            pyvista_nodes = nodes_to_pyvista_lines(nodes)
             pyvista_nodes['color'] = np.repeat(np.linspace(0, 1, len(nodes)), 12)
             # Draw both versions of the nodes
             self._actors_1.append(pl.add_mesh(pyvista_nodes, color=colors[i], line_width=self._line_width))

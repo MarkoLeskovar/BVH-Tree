@@ -72,10 +72,10 @@ mesh = examples.action_figure(size=mesh_size)
 points = examples.sphere(diameter=2 * mesh_size, nu=5).vertices
 
 # Create the tree
-aabb_tree = AABBTree.from_surface_mesh(mesh, depth_lim=16, split_lim=10)
+aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)
 
 # Query closest points
-distances, _, closest_points = aabb_tree.query_closest_points(points, workers=16)
+closest_points, distances, _ = aabb_tree.query_closest_points(points, workers=16)
 
 # Add mesh and points
 pl = pv.Plotter()
