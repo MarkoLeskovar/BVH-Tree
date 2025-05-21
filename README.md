@@ -2,7 +2,7 @@
 
 > Bonding Volume Hierarchy Tree for 3D surface meshes written in Python and C++.
 
-`BVH-Tree` is Python & C++ implementation of static bounding volume hierarchy tree for fast distance queries on 3D surface meshes.
+`BVH-Tree` is Python and C++ implementation of static bounding volume hierarchy tree for fast distance queries on 3D surface meshes.
 
 ![example_visualization](docs/example_visualization.gif)
 
@@ -25,7 +25,7 @@ The `BVH-Tree` is tested and works on Windows 11 and Linux Debian 12. It should 
 The project can be simply installed trough `pip`. It is recommended to install the project in
 a separated [virtual environment](https://docs.python.org/3/library/venv.html) via `venv` module.
 
-1. Clone the repository to a folder and navigat eto the folder.
+1. Clone the repository and navigate to the folder.
 ```sh
 git https://github.com/MarkoLeskovar/BVH-Tree
 cd BVH-Tree
