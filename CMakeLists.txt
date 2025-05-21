@@ -2,6 +2,9 @@
 # policies up to CMake 3.27
 cmake_minimum_required(VERSION 3.15...3.27)
 
+# Release build
+set(CMAKE_BUILD_TYPE Release)
+
 # Name and version are defined in "pyproject.toml" via scikit-build-core
 project(
   ${SKBUILD_PROJECT_NAME}
