@@ -4,7 +4,9 @@ import pyvista as pv
 from typing import Sequence
 
 from bvhtree.core import Triangle, TriangleMesh_core, QueryResult
-from . import _FILE_FORMAT
+
+# Global variables
+_FILE_FORMAT = '.vtk'
 
 
 '''

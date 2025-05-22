@@ -7,7 +7,8 @@ from icosphere import icosphere
 from .utils import rot_mat_3d_d
 from .class_mesh import TriangleMesh
 
-from . import _FILE_FORMAT
+# Global variables
+_FILE_FORMAT = '.vtk'
 
 __all__ = ['cube', 'sphere', 'nefertiti', 'stanford_bunny_coarse', 'stanford_bunny',
            'stanford_lucy', 'stanford_dragon','armadillo', 'action_figure', 'burial_urn']
