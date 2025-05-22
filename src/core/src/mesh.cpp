@@ -100,7 +100,7 @@ void TriangleMesh::scale(const Vec3 &scale) {
 
 
 void TriangleMesh::rotate(const Vec3 &angles) {
-    const Mat3 rotation = rotation_matrix_rad(angles);
+    const Mat3 rotation = rotation_matrix_deg(angles);
     for (size_t i = 0; i < m_vertices.size(); i++) {
         m_vertices[i] = rotation * m_vertices[i];
     }

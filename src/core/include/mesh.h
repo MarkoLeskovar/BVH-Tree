@@ -73,7 +73,7 @@ public:
     void rotate(const Vec3& angles);
     void transform(const Mat4& transform);
 
-    // Closest point queries
+    // Closest point queries -> NAIVE 0(n*m) approach
     [[nodiscard]] QueryResult query_closest_point(const Vec3& point) const;
     [[nodiscard]] std::vector<QueryResult> query_closest_points(const std::vector<Vec3>& points, int workers=1) const;
 

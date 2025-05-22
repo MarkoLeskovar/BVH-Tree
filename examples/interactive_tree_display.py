@@ -7,7 +7,7 @@ def main():
 
     # Load the mesh
     mesh_size = 20
-    mesh = examples.burial_urn(size=mesh_size)
+    mesh = examples.action_figure(size=mesh_size)
 
     # Create a BVH class
     aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=16, split_lim=10)

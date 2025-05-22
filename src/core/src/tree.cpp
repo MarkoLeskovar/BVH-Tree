@@ -81,8 +81,6 @@ AABBTree::AABBTree(const TriangleMesh &mesh, int depth_lim, int split_lim) : m_m
 
 
 std::vector<AABBNode> AABBTree::get_leaf_nodes() const {
-    // check_if_needs_rebuild();
-    // Get leaf nodes
     std::vector<AABBNode> nodes;
     nodes.reserve(m_nodes.size());
     for (const auto& node : m_nodes) {
@@ -96,7 +94,6 @@ std::vector<AABBNode> AABBTree::get_leaf_nodes() const {
 
 
 std::vector<AABBNode> AABBTree::get_nodes_at_depth(int depth) const {
-    // check_if_needs_rebuild();
     std::vector<AABBNode> nodes;
     nodes.reserve(m_nodes.size());
     for (const auto & node : m_nodes) {
@@ -167,7 +164,6 @@ void AABBTree::build_aabb_tree(const int &depth_lim, const int &split_lim) {
     root_node.m_face_count = m_mesh.num_faces();
     root_node.m_aabb = create_aabb(0, m_mesh.num_faces());
 
-
     // Add root node to the list
     m_nodes.push_back(root_node);
 
@@ -203,8 +199,8 @@ void AABBTree::build_aabb_tree(const int &depth_lim, const int &split_lim) {
             std::array<AABBNode, 2> child_nodes = split_middle(m_nodes[node_id], all_face_centers);
 
             // Add parent ids
-            child_nodes[0].m_parent_id = node_id;
-            child_nodes[1].m_parent_id = node_id;
+//            child_nodes[0].m_parent_id = node_id;
+//            child_nodes[1].m_parent_id = node_id;
 
             // Add the nodes
             m_nodes.push_back(child_nodes[0]);

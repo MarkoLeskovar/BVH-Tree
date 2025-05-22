@@ -49,12 +49,13 @@ O-----------------------------------------------------------------------------O
 O-----------------------------------------------------------------------------O
 */
 
+
 class AABBNode {
     friend class AABBTree;
 
 private:
     AABB m_aabb;
-    int m_parent_id = -1;
+//    int m_parent_id = -1;
     int m_child_id = -1;
     int m_depth = 0;
     int m_face_index = -1;
@@ -63,7 +64,7 @@ private:
 public:
     // Getters
     [[nodiscard]] const AABB& aabb() const { return m_aabb; }
-    [[nodiscard]] int parent_id() const { return m_parent_id; }
+//    [[nodiscard]] int parent_id() const { return m_parent_id; }
     [[nodiscard]] int depth() const { return m_depth; }
     [[nodiscard]] int face_index() const { return m_face_index; }
     [[nodiscard]] int face_count() const { return m_face_count; }
@@ -72,7 +73,7 @@ public:
     [[nodiscard]] int left_child_id() const { return m_child_id; }
     [[nodiscard]] int right_child_id() const { return m_child_id + 1; }
     [[nodiscard]] bool is_leaf() const {return m_child_id == -1; }
-    [[nodiscard]] bool is_root() const {return m_parent_id == -1; }
+//    [[nodiscard]] bool is_root() const {return m_parent_id == -1; }
 };
 
 
@@ -106,7 +107,7 @@ public:
     [[nodiscard]] std::vector<AABBNode> get_leaf_nodes() const;
     [[nodiscard]] std::vector<AABBNode> get_nodes_at_depth(int depth) const;
 
-    // Closest point queries
+    // Closest point queries -> TREE O(n*log(n)) approach
     [[nodiscard]] QueryResult query_closest_point(const Vec3& point) const;
     [[nodiscard]] std::vector<QueryResult> query_closest_points(const std::vector<Vec3>& points, int workers=1) const;
 

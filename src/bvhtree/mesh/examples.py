@@ -7,6 +7,8 @@ from icosphere import icosphere
 from .utils import rot_mat_3d_d
 from .class_mesh import TriangleMesh
 
+from . import _FILE_FORMAT
+
 __all__ = ['cube', 'sphere', 'nefertiti', 'stanford_bunny_coarse', 'stanford_bunny',
            'stanford_lucy', 'stanford_dragon','armadillo', 'action_figure', 'burial_urn']
 
@@ -112,9 +114,9 @@ def stanford_bunny_coarse(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_bunny_coarse, 'stanford_bunny_coarse.sm.vtk')
+    mesh = _load_and_fix_mesh(pv.examples.download_bunny_coarse, 'stanford_bunny_coarse' + _FILE_FORMAT)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 180.0])
     return mesh
 
 
@@ -126,9 +128,9 @@ def stanford_bunny(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_bunny, 'stanford_bunny.sm.vtk', fix_mesh=True, flip_normals=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_bunny, 'stanford_bunny' + _FILE_FORMAT, fix_mesh=True, flip_normals=True)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 180.0])
     return mesh
 
 
@@ -139,9 +141,9 @@ def stanford_dragon(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_dragon, 'stanford_dragon.sm.vtk', fix_mesh=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_dragon, 'stanford_dragon' + _FILE_FORMAT, fix_mesh=True)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 180.0])
     return mesh
 
 
@@ -152,7 +154,7 @@ def stanford_lucy(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_lucy, 'stanford_lucy.sm.vtk', fix_mesh=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_lucy, 'stanford_lucy' + _FILE_FORMAT, fix_mesh=True)
     _shift_and_scale_mesh(mesh, size)
     return mesh
 
@@ -164,9 +166,10 @@ def armadillo(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_armadillo, 'armadillo.sm.vtk', fix_mesh=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_armadillo, 'armadillo' + _FILE_FORMAT, fix_mesh=True)
     _shift_and_scale_mesh(mesh, size)
     mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 0.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 0.0])
     return mesh
 
 
@@ -177,9 +180,9 @@ def nefertiti(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_nefertiti, 'nefertiti.sm.vtk', fix_mesh=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_nefertiti, 'nefertiti' + _FILE_FORMAT, fix_mesh=True)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([0.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([0.0, 0.0, 180.0])
     return mesh
 
 
@@ -190,9 +193,9 @@ def action_figure(size=1.0,) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_action_figure, 'action_figure.sm.vtk')
+    mesh = _load_and_fix_mesh(pv.examples.download_action_figure, 'action_figure' + _FILE_FORMAT)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 180.0])
     return mesh
 
 
@@ -203,9 +206,9 @@ def burial_urn(size=1.0) -> TriangleMesh:
     :param size: The size of the mesh measured as the approximate length of the largest diagonal.
     :returns: An instance of SurfaceMesh.
     """
-    mesh = _load_and_fix_mesh(pv.examples.download_urn, 'urn.sm.vtk', fix_mesh=True)
+    mesh = _load_and_fix_mesh(pv.examples.download_urn, 'burial_urn' + _FILE_FORMAT, fix_mesh=True)
     _shift_and_scale_mesh(mesh, size)
-    mesh.vertices = np.dot(rot_mat_3d_d([90.0, 0.0, 180.0]), mesh.vertices.T).T
+    mesh.rotate([90.0, 0.0, 180.0])
     return mesh
 
 

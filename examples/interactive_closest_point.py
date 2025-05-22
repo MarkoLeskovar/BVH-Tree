@@ -17,7 +17,7 @@ def main():
 
     # Load the mesh
     mesh_size = 20
-    mesh = examples.action_figure(size=mesh_size)
+    mesh = examples.nefertiti(size=mesh_size)
 
     # Create a BVH class
     aabb_tree = AABBTree.from_triangle_mesh(mesh, depth_lim=14, split_lim=20)
@@ -48,6 +48,7 @@ def main():
 
     # Draw nodes function
     def draw_nodes(radius):
+        num_box_tests = 0
         num_triangle_tests = 0
         intersecting_leaf_nodes = []
         node_list = []
@@ -64,6 +65,7 @@ def main():
             # Check intersection
             if box_sphere_intersection(node.aabb.min, node.aabb.max, query_point, radius):
                 node_list.append(node)
+                num_box_tests += 1
                 # Add children
                 if not node.is_leaf():
                     # Get children
@@ -83,7 +85,7 @@ def main():
         pl.add_mesh(pyvista_mesh_nodes, name='nodes_1', scalars='color', opacity='opacity', line_width=2, cmap='jet', show_scalar_bar=False)
         pl.add_mesh(nodes_to_pyvista_lines(intersecting_leaf_nodes), name='nodes_2', color='black', line_width=5)
         # Print info
-        print(f'\rBOX TESTS = {len(intersecting_leaf_nodes)}, TRIANGLE TESTS = {num_triangle_tests}, TRIANGLE TESTS [%] = {num_triangle_tests / mesh.num_faces * 100:.2f} ', end='')
+        print(f'\rBOX TESTS = {num_box_tests}, TRIANGLE TESTS = {num_triangle_tests}, TRIANGLE TESTS [%] = {num_triangle_tests / mesh.num_faces * 100:.2f} ', end='')
 
     def remove_nodes():
         pl.remove_actor('nodes_1')

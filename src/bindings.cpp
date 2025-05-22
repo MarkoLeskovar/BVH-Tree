@@ -29,6 +29,7 @@ PYBIND11_MODULE(core, m) {
         .def_property_readonly("distance", &QueryResult::distance)
         .def_property_readonly("face_id", &QueryResult::face_id);
 
+
     py::class_<Triangle>(m, "Triangle")
         // Constructors
         .def(py::init<>())
@@ -97,15 +98,15 @@ PYBIND11_MODULE(core, m) {
         .def(py::init<>())
         // Getters (property)
         .def_property_readonly("aabb", &AABBNode::aabb)
-        .def_property_readonly("parent_id", &AABBNode::parent_id)
+//        .def_property_readonly("parent_id", &AABBNode::parent_id)
         .def_property_readonly("depth", &AABBNode::depth)
         .def_property_readonly("face_index", &AABBNode::face_index)
         .def_property_readonly("face_count", &AABBNode::face_count)
         // Special getters
         .def("left_child_id", &AABBNode::left_child_id)
         .def("right_child_id", &AABBNode::right_child_id)
-        .def("is_leaf", &AABBNode::is_leaf)
-        .def("is_root", &AABBNode::is_root);
+        .def("is_leaf", &AABBNode::is_leaf);
+//        .def("is_root", &AABBNode::is_root)
 
 
     py::class_<AABBTree>(m, "AABBTree_core")
