@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.mesh import closest_point_on_line
+from bvh.mesh import closest_point_on_line
 
 
 # Define main function

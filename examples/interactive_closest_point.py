@@ -2,10 +2,10 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-from bvhtree.tree import AABBTree
-from bvhtree.mesh import examples
-from bvhtree.mesh import box_sphere_intersection
-from bvhtree.tree.utils import nodes_to_pyvista_lines
+from bvh.tree import AABBTree
+from bvh.mesh import examples
+from bvh.mesh import box_sphere_intersection
+from bvh.tree.utils import nodes_to_pyvista_lines
 
 # TODO : Prevent data copy when accessing internal variables from classes !!
 # TODO : Draw all the nodes in advance and dynamically change their visibility to speed up the rendering !!

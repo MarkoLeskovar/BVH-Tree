@@ -8,14 +8,14 @@
 
 ## Features
 
-- Lightweight, fast, and easy to understand bvhtree class to be used in Python.
+- Lightweight, fast, and easy to understand `bvh` class to be used in Python.
 - Backend written in C++ with multiprocessing support via [OpenMP](https://www.openmp.org/).
 - Interactive visualization via [PyVista](https://docs.pyvista.org/).
 
 
 ## Project structure
 
-- [´bvhtree´](src/bvhtree) - Main module for BVH-Tree.
+- [´bvhtree´](src/bvh) - Main module for BVH-Tree.
 - [´examples´](examples) - Scripts which serve as examples on how to use `BVH-Tree`.
 
 
@@ -42,8 +42,8 @@ pip install -e .
 ```python
 import numpy as np
 import pyvista as pv
-from bvhtree.tree import AABBTree
-import bvhtree.mesh.examples as examples
+from bvh.tree import AABBTree
+import bvh.mesh.examples as examples
 
 # Load an example mesh
 mesh_size = 50

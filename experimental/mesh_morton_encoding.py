@@ -5,8 +5,8 @@ import numba
 import numpy as np
 import pyvista as pv
 
-import bvhtree.mesh.examples as examples
-from bvhtree.mesh.utils import compute_triangle_centers
+import bvh.mesh.examples as examples
+from bvh.mesh.utils import compute_triangle_centers
 from morton_codes import morton_encode, morton_decode, MAX_EPS_32, MAX_EPS_64, MAX_BIT_WIDTH_32
 
 

@@ -38,3 +38,4 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
 minimum-version = "build-system.requires"
+wheel.packages = ["src/bvh"]

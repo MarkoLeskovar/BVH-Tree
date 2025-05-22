@@ -1,8 +1,8 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.tree import AABB
-from bvhtree.mesh import box_triangle_intersection
+from bvh.tree import AABB
+from bvh.mesh import box_triangle_intersection
 
 
 def main():

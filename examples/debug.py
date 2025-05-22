@@ -2,9 +2,9 @@ import numba
 import numpy as np
 from typing import Sequence
 
-from bvhtree.tree import AABBTree
-from bvhtree.mesh.examples import stanford_bunny_coarse, burial_urn
-from bvhtree.mesh.utils import _rot_mat_3d_r
+from bvh.tree import AABBTree
+from bvh.mesh.examples import stanford_bunny_coarse, burial_urn
+from bvh.mesh.utils import _rot_mat_3d_r
 
 @numba.njit(cache=True)
 def combine_transformations(transforms: list[np.ndarray]):

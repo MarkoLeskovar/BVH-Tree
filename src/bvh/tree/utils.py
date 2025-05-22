@@ -2,7 +2,7 @@ import numba
 import numpy as np
 import pyvista as pv
 
-from bvhtree.core import AABBNode
+from bvh.core import AABBNode
 
 
 '''

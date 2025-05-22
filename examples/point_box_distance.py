@@ -1,8 +1,8 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.tree import AABB
-from bvhtree.mesh import closest_point_on_box
+from bvh.tree import AABB
+from bvh.mesh import closest_point_on_box
 
 
 def main():

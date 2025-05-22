@@ -3,7 +3,7 @@ import numpy as np
 import pyvista as pv
 
 from morton_codes import morton_encode, morton_decode, MAX_EPS_32, MAX_EPS_64
-import bvhtree.mesh.examples as examples
+import bvh.mesh.examples as examples
 
 
 @numba.njit(cache=True)

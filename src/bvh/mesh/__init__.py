@@ -1,6 +1,6 @@
 # Import C++ bindings to Python
-from bvhtree.core import box_triangle_intersection, box_sphere_intersection
-from bvhtree.core import closest_point_on_line, closest_point_on_triangle, closest_point_on_box
+from bvh.core import box_triangle_intersection, box_sphere_intersection
+from bvh.core import closest_point_on_line, closest_point_on_triangle, closest_point_on_box
 
 # Python-wrapped C++ modules
 from .class_mesh import Triangle, TriangleMesh

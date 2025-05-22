@@ -48,4 +48,4 @@ endif()
 target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
 # The install directory is the output (wheel) directory
-install(TARGETS ${MODULE_NAME} DESTINATION bvhtree)
+install(TARGETS ${MODULE_NAME} DESTINATION bvh)

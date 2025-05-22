@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from bvhtree.core import AABB, AABBNode, AABBTree_core
+from bvh.core import AABB, AABBNode, AABBTree_core
 from ..mesh.class_mesh import TriangleMesh
 from ..mesh.class_mesh import _get_query_results
 

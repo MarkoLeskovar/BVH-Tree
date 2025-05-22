@@ -2,7 +2,7 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-import bvhtree.mesh.examples as examples
+import bvh.mesh.examples as examples
 
 
 # Define main function
