@@ -213,6 +213,20 @@ def burial_urn(size=1.0) -> TriangleMesh:
     return mesh
 
 
+def drill(size=1.0) -> TriangleMesh:
+    """
+    Burial urn mesh.
+
+    :param size: The size of the mesh measured as the approximate length of the largest diagonal.
+    :returns: An instance of SurfaceMesh.
+    """
+    mesh = _load_and_fix_mesh(pv.examples.download_drill, 'drill' + _FILE_FORMAT)
+    _shift_and_scale_mesh(mesh, size)
+    mesh.rotate([40.0, 0.0, -31.0])
+    mesh.rotate([0.0, -90.0, -90.0])
+    return mesh
+
+
 '''
 O------------------------------------------------------------------------------O
 | PRIVATE - AUXILIARY FUNCTIONS                                                |
@@ -229,7 +243,7 @@ def _load_and_fix_mesh(pyvista_download_function, filename: str, fix_mesh=False,
     else:
         print(f'Saving the model "{filename}" in folder "{_CACHED_DIR}"...')
         # Download example surface from pyvista
-        pyvista_mesh = pyvista_download_function()
+        pyvista_mesh = pyvista_download_function().clean()
         # Flip surface normals
         if flip_normals:
             pyvista_mesh.flip_normals()
